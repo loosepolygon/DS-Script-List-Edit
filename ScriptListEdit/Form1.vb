@@ -18,6 +18,12 @@ Public Class frmScriptListEdit
         e.Effect = DragDropEffects.Copy
     End Sub
 
+    Private Sub WriteBytes(ByRef fs As FileStream, ByVal byt() As Byte)
+        For i = 0 To byt.Length - 1
+            fs.WriteByte(byt(i))
+        Next
+    End Sub
+
     Private Function RawStrFromBytes(ByVal loc As UInteger, Optional ByVal maxLength As Integer = Int32.MaxValue) As Byte()
         Dim cont As Boolean = True
         Dim len As Integer = 0
@@ -39,12 +45,25 @@ Public Class frmScriptListEdit
 
         Return strBytesJIS
     End Function
+    Private Function Str2Bytes(ByVal str As String) As Byte()
+        Dim BArr() As Byte
+        BArr = Encoding.GetEncoding("shift_jis").GetBytes(str)
+        Return BArr
+    End Function
     Private Function RawStrToStr(ByVal rawStr As Byte()) As String
         Dim enc1 = Encoding.GetEncoding("shift_jis")
         Dim enc2 = Encoding.Unicode
         Dim strBytesUnicode As Byte() = Encoding.Convert(enc1, enc2, rawStr)
         Dim str As String = Encoding.Unicode.GetString(strBytesUnicode)
         Return str
+    End Function
+
+    Private Function Int32ToFourByte(ByVal val As Integer) As Byte()
+        If bigEndian Then
+            Return ReverseFourBytes(BitConverter.GetBytes(Convert.ToInt32(val)))
+        Else
+            Return BitConverter.GetBytes(Convert.ToInt32(val))
+        End If
     End Function
 
     Private Function ReverseFourBytes(ByVal byt() As Byte)
@@ -119,6 +138,53 @@ Public Class frmScriptListEdit
             dgvLuainfo.Rows.Add(partRow)
         Next
 
+    End Sub
+
+    Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
+        bytes = File.ReadAllBytes(txtFile.Text)
+        If Not File.Exists(txtFile.Text & ".bak") Then
+            File.WriteAllBytes(txtFile.Text & ".bak", bytes)
+        End If
+
+        If File.Exists(txtFile.Text) Then File.Delete(txtFile.Text)
+        Dim fs As New IO.FileStream(txtFile.Text, IO.FileMode.CreateNew)
+
+        Dim scriptCount As Integer = dgvLuainfo.Rows.Count
+
+        WriteBytes(fs, Str2Bytes("LUAI"))
+        WriteBytes(fs, Int32ToFourByte(headerUnk1))
+        WriteBytes(fs, Int32ToFourByte(scriptCount))
+        WriteBytes(fs, Int32ToFourByte(headerUnk2))
+
+        Dim namesOffset = &H10 + scriptCount * &H10
+        fs.SetLength(namesOffset)
+
+        For i = 0 To scriptCount - 1
+            Dim name As String = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("Name")).Value
+            Dim npcID As Integer = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("NPC ID")).Value
+            Dim unk1 As Integer = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("Unk1")).Value
+            Dim unk2 As Integer = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("Unk2")).Value
+
+            WriteBytes(fs, Int32ToFourByte(npcID))
+            WriteBytes(fs, Int32ToFourByte(fs.Length))
+            WriteBytes(fs, Int32ToFourByte(unk1))
+            WriteBytes(fs, Int32ToFourByte(unk2))
+
+            Dim currOffset = fs.Position
+            fs.Position = fs.Length
+            WriteBytes(fs, Str2Bytes(name))
+            fs.WriteByte(0)
+            fs.Position = currOffset
+        Next
+
+        fs.Position = fs.Length
+
+        While fs.Length Mod &H10 <> 0
+            fs.WriteByte(0)
+        End While
+
+        fs.Close()
+        MsgBox("Save Complete.")
     End Sub
 
     Private Sub frmScriptListEdit_Load(sender As Object, e As EventArgs) Handles MyBase.Load
