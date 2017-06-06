@@ -3,6 +3,7 @@ Imports System.Text
 
 Public Class frmScriptListEdit
     Private luainfoLayout As dgvLayout
+    Private luagnlLayout As dgvLayout
 
     Private headerUnk1 As Integer
     Private headerUnk2 As Integer
@@ -83,8 +84,8 @@ Public Class frmScriptListEdit
     End Function
 
     Private Sub initDGVs()
-        Dim dgvs() As DataGridView = {dgvLuainfo}
-        Dim layouts() As dgvLayout = {luainfoLayout}
+        Dim dgvs() As DataGridView = {dgvLuainfo, dgvLuagnl}
+        Dim layouts() As dgvLayout = {luainfoLayout, luagnlLayout}
 
         For i = 0 To layouts.Count - 1
             Dim dgv = dgvs(i)
@@ -93,7 +94,7 @@ Public Class frmScriptListEdit
             dgv.Rows.Clear()
             dgv.Columns.Clear()
 
-            For j = 0 To luainfoLayout.fieldCount - 1
+            For j = 0 To layout.fieldCount - 1
                 dgv.Columns.Add(layout.fieldNames(j), layout.fieldNames(j))
                 dgv.Columns(j).DefaultCellStyle.BackColor = layout.fieldBGColors(j)
                 dgv.Columns(j).DefaultCellStyle.ForeColor = Color.Black
@@ -103,11 +104,13 @@ Public Class frmScriptListEdit
     End Sub
 
     Private Sub btnOpen_Click(sender As Object, e As EventArgs) Handles btnOpen.Click
-        bytes = File.ReadAllBytes(txtFile.Text)
-
         bigEndian = False
 
         initDGVs()
+
+        ' luainfo file
+
+        bytes = File.ReadAllBytes(txtFile.Text)
 
         Dim rawStr As Byte() = RawStrFromBytes(&H0, 4)
         Dim signature As String = RawStrToStr(rawStr)
@@ -138,6 +141,28 @@ Public Class frmScriptListEdit
             dgvLuainfo.Rows.Add(partRow)
         Next
 
+        ' luagnl file
+
+        Dim luagnlFileName = txtFile.Text.Replace(".luainfo", ".luagnl")
+        If File.Exists(luagnlFileName) = False Then
+            Throw New ApplicationException("Cannot find associated luagnl file: " & luagnlFileName)
+        End If
+
+        bytes = File.ReadAllBytes(luagnlFileName)
+
+        Dim strOffset = 0
+        Dim idx = 0
+
+        Do
+            strOffset = SIntFromFour(idx * &H4)
+
+            rawStr = RawStrFromBytes(strOffset)
+            Dim functionName As String = RawStrToStr(rawStr)
+
+            dgvLuagnl.Rows.Add({functionName})
+
+            idx += 1
+        Loop Until strOffset = 0
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
@@ -193,6 +218,9 @@ Public Class frmScriptListEdit
         luainfoLayout.add("NPC ID", "i32", Color.White)
         luainfoLayout.add("Unk1", "i32", Color.LightGray)
         luainfoLayout.add("Unk2", "i32", Color.LightGray)
+
+        luagnlLayout = New dgvLayout
+        luagnlLayout.add("Function Name", "string", Color.White)
     End Sub
 
 End Class

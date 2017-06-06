@@ -25,13 +25,17 @@ Partial Class frmScriptListEdit
         Me.btnSave = New System.Windows.Forms.Button()
         Me.btnOpen = New System.Windows.Forms.Button()
         Me.txtFile = New System.Windows.Forms.TextBox()
-        Me.lblGAFile = New System.Windows.Forms.Label()
+        Me.lblFilePath = New System.Windows.Forms.Label()
         Me.tabControlRoot = New System.Windows.Forms.TabControl()
         Me.tabLuainfo = New System.Windows.Forms.TabPage()
         Me.dgvLuainfo = New System.Windows.Forms.DataGridView()
+        Me.tabLuagnl = New System.Windows.Forms.TabPage()
+        Me.dgvLuagnl = New System.Windows.Forms.DataGridView()
         Me.tabControlRoot.SuspendLayout()
         Me.tabLuainfo.SuspendLayout()
         CType(Me.dgvLuainfo, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tabLuagnl.SuspendLayout()
+        CType(Me.dgvLuagnl, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'btnSave
@@ -59,19 +63,19 @@ Partial Class frmScriptListEdit
         Me.txtFile.AllowDrop = True
         Me.txtFile.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtFile.Location = New System.Drawing.Point(46, 14)
+        Me.txtFile.Location = New System.Drawing.Point(77, 14)
         Me.txtFile.Name = "txtFile"
-        Me.txtFile.Size = New System.Drawing.Size(772, 20)
+        Me.txtFile.Size = New System.Drawing.Size(741, 20)
         Me.txtFile.TabIndex = 31
         '
-        'lblGAFile
+        'lblFilePath
         '
-        Me.lblGAFile.AutoSize = True
-        Me.lblGAFile.Location = New System.Drawing.Point(14, 17)
-        Me.lblGAFile.Name = "lblGAFile"
-        Me.lblGAFile.Size = New System.Drawing.Size(26, 13)
-        Me.lblGAFile.TabIndex = 33
-        Me.lblGAFile.Text = "File:"
+        Me.lblFilePath.AutoSize = True
+        Me.lblFilePath.Location = New System.Drawing.Point(14, 17)
+        Me.lblFilePath.Name = "lblFilePath"
+        Me.lblFilePath.Size = New System.Drawing.Size(57, 13)
+        Me.lblFilePath.TabIndex = 33
+        Me.lblFilePath.Text = "luainfo file:"
         '
         'tabControlRoot
         '
@@ -79,6 +83,7 @@ Partial Class frmScriptListEdit
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.tabControlRoot.Controls.Add(Me.tabLuainfo)
+        Me.tabControlRoot.Controls.Add(Me.tabLuagnl)
         Me.tabControlRoot.Location = New System.Drawing.Point(12, 66)
         Me.tabControlRoot.Margin = New System.Windows.Forms.Padding(0)
         Me.tabControlRoot.Name = "tabControlRoot"
@@ -113,6 +118,32 @@ Partial Class frmScriptListEdit
         Me.dgvLuainfo.Size = New System.Drawing.Size(792, 652)
         Me.dgvLuainfo.TabIndex = 39
         '
+        'tabLuagnl
+        '
+        Me.tabLuagnl.Controls.Add(Me.dgvLuagnl)
+        Me.tabLuagnl.Location = New System.Drawing.Point(4, 24)
+        Me.tabLuagnl.Margin = New System.Windows.Forms.Padding(0)
+        Me.tabLuagnl.Name = "tabLuagnl"
+        Me.tabLuagnl.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabLuagnl.Size = New System.Drawing.Size(798, 658)
+        Me.tabLuagnl.TabIndex = 3
+        Me.tabLuagnl.Text = "luagnl"
+        Me.tabLuagnl.UseVisualStyleBackColor = True
+        '
+        'dgvLuagnl
+        '
+        Me.dgvLuagnl.AllowUserToAddRows = False
+        Me.dgvLuagnl.AllowUserToDeleteRows = False
+        Me.dgvLuagnl.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
+        Me.dgvLuagnl.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.dgvLuagnl.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.dgvLuagnl.Location = New System.Drawing.Point(3, 3)
+        Me.dgvLuagnl.Margin = New System.Windows.Forms.Padding(0)
+        Me.dgvLuagnl.Name = "dgvLuagnl"
+        Me.dgvLuagnl.RowHeadersWidth = 60
+        Me.dgvLuagnl.Size = New System.Drawing.Size(792, 652)
+        Me.dgvLuagnl.TabIndex = 39
+        '
         'frmScriptListEdit
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -122,12 +153,14 @@ Partial Class frmScriptListEdit
         Me.Controls.Add(Me.btnSave)
         Me.Controls.Add(Me.btnOpen)
         Me.Controls.Add(Me.txtFile)
-        Me.Controls.Add(Me.lblGAFile)
+        Me.Controls.Add(Me.lblFilePath)
         Me.Name = "frmScriptListEdit"
         Me.Text = "Script List Edit"
         Me.tabControlRoot.ResumeLayout(False)
         Me.tabLuainfo.ResumeLayout(False)
         CType(Me.dgvLuainfo, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tabLuagnl.ResumeLayout(False)
+        CType(Me.dgvLuagnl, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -135,8 +168,10 @@ Partial Class frmScriptListEdit
     Friend WithEvents btnSave As System.Windows.Forms.Button
     Friend WithEvents btnOpen As System.Windows.Forms.Button
     Friend WithEvents txtFile As System.Windows.Forms.TextBox
-    Friend WithEvents lblGAFile As System.Windows.Forms.Label
+    Friend WithEvents lblFilePath As System.Windows.Forms.Label
     Friend WithEvents tabControlRoot As TabControl
     Friend WithEvents tabLuainfo As TabPage
     Friend WithEvents dgvLuainfo As DataGridView
+    Friend WithEvents tabLuagnl As TabPage
+    Friend WithEvents dgvLuagnl As DataGridView
 End Class
