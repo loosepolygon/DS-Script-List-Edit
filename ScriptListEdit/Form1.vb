@@ -156,16 +156,22 @@ Public Class frmScriptListEdit
         Do
             strOffset = SIntFromFour(idx * &H4)
 
+            If strOffset = 0 Then
+                Exit Do
+            End If
+
             rawStr = RawStrFromBytes(strOffset)
             Dim functionName As String = RawStrToStr(rawStr)
 
             dgvLuagnl.Rows.Add({functionName})
 
             idx += 1
-        Loop Until strOffset = 0
+        Loop
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
+        ' luainfo file
+
         bytes = File.ReadAllBytes(txtFile.Text)
         If Not File.Exists(txtFile.Text & ".bak") Then
             File.WriteAllBytes(txtFile.Text & ".bak", bytes)
@@ -204,11 +210,48 @@ Public Class frmScriptListEdit
 
         fs.Position = fs.Length
 
+        ' Probably not important, but the game's original files end in multiples of 16.
         While fs.Length Mod &H10 <> 0
             fs.WriteByte(0)
         End While
 
         fs.Close()
+
+        ' luagnl file
+
+        Dim luagnlFileName = txtFile.Text.Replace(".luainfo", ".luagnl")
+
+        If File.Exists(luagnlFileName) And Not File.Exists(luagnlFileName & ".bak") Then
+            bytes = File.ReadAllBytes(luagnlFileName)
+            File.WriteAllBytes(luagnlFileName & ".bak", bytes)
+        End If
+
+        If File.Exists(luagnlFileName) Then File.Delete(luagnlFileName)
+        fs = New IO.FileStream(luagnlFileName, IO.FileMode.CreateNew)
+
+        Dim functionCnt = dgvLuagnl.Rows.Count
+        Dim offsets = New List(Of Integer)
+        fs.SetLength(functionCnt * &H4 + &H4)
+        fs.Position = fs.Length
+
+        For i = 0 To functionCnt - 1
+            offsets.Add(fs.Length)
+            WriteBytes(fs, Str2Bytes(dgvLuagnl.Rows(i).Cells(0).Value & vbNullChar))
+        Next
+
+        fs.Position = 0
+        For i = 0 To offsets.Count - 1
+            WriteBytes(fs, Int32ToFourByte(offsets(i)))
+        Next
+
+        WriteBytes(fs, Int32ToFourByte(0))
+
+        While fs.Length Mod &H10 <> 0
+            fs.WriteByte(0)
+        End While
+
+        fs.Close()
+
         MsgBox("Save Complete.")
     End Sub
 
