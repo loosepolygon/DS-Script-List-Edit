@@ -128,16 +128,21 @@ Public Class frmScriptListEdit
         For i = 0 To scriptCount - 1
             Dim npcID = SIntFromFour(&H10 + &H10 * i + &H0)
             Dim offset = SIntFromFour(&H10 + &H10 * i + &H4)
-            Dim unk1 = SIntFromFour(&H10 + &H10 * i + &H8)
-            Dim unk2 = SIntFromFour(&H10 + &H10 * i + &HC)
+            Dim offset2 = SIntFromFour(&H10 + &H10 * i + &H8)
+            Dim unk1 = SIntFromFour(&H10 + &H10 * i + &HC)
             Dim scriptName = RawStrToStr(RawStrFromBytes(offset))
+
+            Dim scriptName2 As String = ""
+            If offset2 <> 0 Then
+                scriptName2 = RawStrToStr(RawStrFromBytes(offset2))
+            End If
 
             Dim partRow(luainfoLayout.fieldCount - 1) As String
 
             partRow(luainfoLayout.getFieldIndex("Name")) = scriptName
             partRow(luainfoLayout.getFieldIndex("NPC ID")) = npcID
+            partRow(luainfoLayout.getFieldIndex("Name2")) = scriptName2
             partRow(luainfoLayout.getFieldIndex("Unk1")) = unk1
-            partRow(luainfoLayout.getFieldIndex("Unk2")) = unk2
             dgvLuainfo.Rows.Add(partRow)
         Next
 
@@ -193,19 +198,31 @@ Public Class frmScriptListEdit
         For i = 0 To scriptCount - 1
             Dim name As String = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("Name")).Value
             Dim npcID As Integer = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("NPC ID")).Value
+            Dim name2 As String = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("Name2")).Value
             Dim unk1 As Integer = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("Unk1")).Value
-            Dim unk2 As Integer = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("Unk2")).Value
 
             WriteBytes(fs, Int32ToFourByte(npcID))
             WriteBytes(fs, Int32ToFourByte(fs.Length))
-            WriteBytes(fs, Int32ToFourByte(unk1))
-            WriteBytes(fs, Int32ToFourByte(unk2))
 
             Dim currOffset = fs.Position
             fs.Position = fs.Length
             WriteBytes(fs, Str2Bytes(name))
             fs.WriteByte(0)
             fs.Position = currOffset
+
+            Dim offset2 As Integer = 0
+            If name2.Length > 0 Then
+                offset2 = fs.Length
+
+                currOffset = fs.Position
+                fs.Position = fs.Length
+                WriteBytes(fs, Str2Bytes(name2))
+                fs.WriteByte(0)
+                fs.Position = currOffset
+            End If
+
+            WriteBytes(fs, Int32ToFourByte(offset2))
+            WriteBytes(fs, Int32ToFourByte(unk1))
         Next
 
         fs.Position = fs.Length
@@ -259,8 +276,8 @@ Public Class frmScriptListEdit
         luainfoLayout = New dgvLayout
         luainfoLayout.add("Name", "string", Color.White)
         luainfoLayout.add("NPC ID", "i32", Color.White)
+        luainfoLayout.add("Name2", "string", Color.White)
         luainfoLayout.add("Unk1", "i32", Color.LightGray)
-        luainfoLayout.add("Unk2", "i32", Color.LightGray)
 
         luagnlLayout = New dgvLayout
         luagnlLayout.add("Function Name", "string", Color.White)
