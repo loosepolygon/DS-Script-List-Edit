@@ -5,6 +5,9 @@ Public Class frmScriptListEdit
     Private luainfoLayout As dgvLayout
     Private luagnlLayout As dgvLayout
 
+    Dim dgvs() As DataGridView
+    Dim layouts() As dgvLayout
+
     Private headerUnk1 As Integer
     Private headerUnk2 As Integer
 
@@ -47,6 +50,8 @@ Public Class frmScriptListEdit
         Return strBytesJIS
     End Function
     Private Function Str2Bytes(ByVal str As String) As Byte()
+        If str Is Nothing Then str = ""
+
         Dim BArr() As Byte
         BArr = Encoding.GetEncoding("shift_jis").GetBytes(str)
         Return BArr
@@ -84,8 +89,8 @@ Public Class frmScriptListEdit
     End Function
 
     Private Sub initDGVs()
-        Dim dgvs() As DataGridView = {dgvLuainfo, dgvLuagnl}
-        Dim layouts() As dgvLayout = {luainfoLayout, luagnlLayout}
+        dgvs = {dgvLuainfo, dgvLuagnl}
+        layouts = {luainfoLayout, luagnlLayout}
 
         For i = 0 To layouts.Count - 1
             Dim dgv = dgvs(i)
@@ -100,6 +105,10 @@ Public Class frmScriptListEdit
                 dgv.Columns(j).DefaultCellStyle.ForeColor = Color.Black
                 dgv.Columns(j).SortMode = DataGridViewColumnSortMode.NotSortable
             Next
+        Next
+
+        For Each dgv In dgvs
+            AddHandler dgv.KeyDown, AddressOf Me.onDgvKeyDown
         Next
     End Sub
 
@@ -201,6 +210,9 @@ Public Class frmScriptListEdit
             Dim name2 As String = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("Name2")).Value
             Dim unk1 As Integer = dgvLuainfo.Rows(i).Cells(luainfoLayout.getFieldIndex("Unk1")).Value
 
+            If name Is Nothing Then name = ""
+            If name2 Is Nothing Then name2 = ""
+
             WriteBytes(fs, Int32ToFourByte(npcID))
             WriteBytes(fs, Int32ToFourByte(fs.Length))
 
@@ -283,6 +295,82 @@ Public Class frmScriptListEdit
         luagnlLayout.add("Function Name", "string", Color.White)
     End Sub
 
+    Private Function getCurrentDgv() As DataGridView
+        Return dgvs(tabControlRoot.SelectedIndex)
+    End Function
+
+
+    Private Sub btnCopy_Click(sender As Object, e As EventArgs) Handles btnCopy.Click
+        Dim dgv = getCurrentDgv()
+
+        If dgv.Rows.Count = 0 Then
+            Return
+        End If
+
+        copyEntry(dgv, dgv.SelectedCells(0).RowIndex)
+    End Sub
+
+    Sub copyEntry(ByRef dgv As DataGridView, rowidx As Integer)
+        Dim row(dgv.Columns.Count - 1)
+        For i = 0 To row.Count - 1
+            row(i) = dgv.Rows(dgv.SelectedCells(0).RowIndex).Cells(i).FormattedValue
+        Next
+        dgv.Rows.Add(row)
+    End Sub
+
+    Private Sub onDgvKeyDown(sender As Object, e As KeyEventArgs)
+        If (e.Modifiers = Keys.Control AndAlso e.KeyCode = Keys.V) = False Then
+            Return
+        End If
+
+        Dim o = CType(Clipboard.GetDataObject(), DataObject)
+        If o.GetDataPresent(DataFormats.Text) = False Then
+            Return
+        End If
+        Dim text = o.GetData(DataFormats.Text).ToString
+        text = text.Replace(vbCr, "").TrimEnd(vbLf)
+        Dim lines As String() = text.Split(vbLf)
+
+        Dim sourceRows = New List(Of String())(lines.Length)
+        Dim sourceMaxColumnCount = 0
+        Dim sourceRowCount = lines.Length
+        For i = 0 To lines.Length - 1
+            Dim words = lines(i).Split(vbTab)
+            sourceRows.Add(words)
+
+            If words.Count > sourceMaxColumnCount Then
+                sourceMaxColumnCount = words.Count
+            End If
+        Next
+
+        Dim dgv = CType(sender, DataGridView)
+
+        Dim cell As DataGridViewCell = dgv.SelectedCells(dgv.SelectedCells.Count - 1)
+        Dim startColumn = cell.ColumnIndex
+        Dim endColumn = startColumn + sourceMaxColumnCount - 1
+        Dim startRow = cell.RowIndex
+        Dim endRow = startRow + sourceRowCount - 1
+
+        If endRow > dgv.RowCount - 1 Then
+            endRow = dgv.RowCount - 1
+        End If
+        If endColumn > dgv.ColumnCount - 1 Then
+            endColumn = dgv.ColumnCount - 1
+        End If
+
+        Dim destColumnCount = endColumn - startColumn + 1
+        Dim destRowCount = endRow - startRow + 1
+
+        For x = 0 To destColumnCount - 1
+            For y = 0 To destRowCount - 1
+                Dim newValue As String = ""
+                If x < sourceRows(y).Count Then
+                    newValue = sourceRows(y)(x)
+                End If
+                dgv.Rows(startRow + y).Cells(startColumn + x).Value = newValue
+            Next
+        Next
+    End Sub
 End Class
 
 

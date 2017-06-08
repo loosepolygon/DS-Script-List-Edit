@@ -31,6 +31,10 @@ Partial Class frmScriptListEdit
         Me.dgvLuainfo = New System.Windows.Forms.DataGridView()
         Me.tabLuagnl = New System.Windows.Forms.TabPage()
         Me.dgvLuagnl = New System.Windows.Forms.DataGridView()
+        Me.btnMoveDown = New System.Windows.Forms.Button()
+        Me.btnMoveUp = New System.Windows.Forms.Button()
+        Me.btnDelete = New System.Windows.Forms.Button()
+        Me.btnCopy = New System.Windows.Forms.Button()
         Me.tabControlRoot.SuspendLayout()
         Me.tabLuainfo.SuspendLayout()
         CType(Me.dgvLuainfo, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -144,11 +148,51 @@ Partial Class frmScriptListEdit
         Me.dgvLuagnl.Size = New System.Drawing.Size(792, 652)
         Me.dgvLuagnl.TabIndex = 39
         '
+        'btnMoveDown
+        '
+        Me.btnMoveDown.Location = New System.Drawing.Point(267, 40)
+        Me.btnMoveDown.Name = "btnMoveDown"
+        Me.btnMoveDown.Size = New System.Drawing.Size(75, 23)
+        Me.btnMoveDown.TabIndex = 50
+        Me.btnMoveDown.Text = "Move Down"
+        Me.btnMoveDown.UseVisualStyleBackColor = True
+        '
+        'btnMoveUp
+        '
+        Me.btnMoveUp.Location = New System.Drawing.Point(186, 40)
+        Me.btnMoveUp.Name = "btnMoveUp"
+        Me.btnMoveUp.Size = New System.Drawing.Size(75, 23)
+        Me.btnMoveUp.TabIndex = 49
+        Me.btnMoveUp.Text = "Move Up"
+        Me.btnMoveUp.UseVisualStyleBackColor = True
+        '
+        'btnDelete
+        '
+        Me.btnDelete.Location = New System.Drawing.Point(93, 40)
+        Me.btnDelete.Name = "btnDelete"
+        Me.btnDelete.Size = New System.Drawing.Size(75, 23)
+        Me.btnDelete.TabIndex = 48
+        Me.btnDelete.Text = "Delete Entry"
+        Me.btnDelete.UseVisualStyleBackColor = True
+        '
+        'btnCopy
+        '
+        Me.btnCopy.Location = New System.Drawing.Point(12, 40)
+        Me.btnCopy.Name = "btnCopy"
+        Me.btnCopy.Size = New System.Drawing.Size(75, 23)
+        Me.btnCopy.TabIndex = 47
+        Me.btnCopy.Text = "Copy Entry"
+        Me.btnCopy.UseVisualStyleBackColor = True
+        '
         'frmScriptListEdit
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(834, 761)
+        Me.Controls.Add(Me.btnMoveDown)
+        Me.Controls.Add(Me.btnMoveUp)
+        Me.Controls.Add(Me.btnDelete)
+        Me.Controls.Add(Me.btnCopy)
         Me.Controls.Add(Me.tabControlRoot)
         Me.Controls.Add(Me.btnSave)
         Me.Controls.Add(Me.btnOpen)
@@ -174,4 +218,8 @@ Partial Class frmScriptListEdit
     Friend WithEvents dgvLuainfo As DataGridView
     Friend WithEvents tabLuagnl As TabPage
     Friend WithEvents dgvLuagnl As DataGridView
+    Friend WithEvents btnMoveDown As Button
+    Friend WithEvents btnMoveUp As Button
+    Friend WithEvents btnDelete As Button
+    Friend WithEvents btnCopy As Button
 End Class
