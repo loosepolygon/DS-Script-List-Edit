@@ -318,6 +318,54 @@ Public Class frmScriptListEdit
         dgv.Rows.Add(row)
     End Sub
 
+    Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
+        Dim dgv = getCurrentDgv()
+
+        If dgv.Rows.Count = 0 Then
+            Return
+        End If
+
+        dgv.Rows.RemoveAt(dgv.SelectedCells(0).RowIndex)
+    End Sub
+
+    Private Sub btnMoveUp_Click(sender As Object, e As EventArgs) Handles btnMoveUp.Click
+        Dim dgv = getCurrentDgv()
+
+        If dgv.Rows.Count < 2 Then
+            Return
+        End If
+
+        Dim rowIndex = dgv.SelectedCells(0).RowIndex
+
+        If rowIndex = 0 Then
+            Return
+        End If
+
+        Dim rowAbove As DataGridViewRow = dgv.Rows(rowIndex - 1)
+
+        dgv.Rows.RemoveAt(rowIndex - 1)
+        dgv.Rows.Insert(rowIndex, rowAbove)
+    End Sub
+
+    Private Sub btnMoveDown_Click(sender As Object, e As EventArgs) Handles btnMoveDown.Click
+        Dim dgv = getCurrentDgv()
+
+        If dgv.Rows.Count < 2 Then
+            Return
+        End If
+
+        Dim rowIndex = dgv.SelectedCells(0).RowIndex
+
+        If rowIndex = dgv.Rows.Count - 1 Then
+            Return
+        End If
+
+        Dim rowBelow As DataGridViewRow = dgv.Rows(rowIndex + 1)
+
+        dgv.Rows.RemoveAt(rowIndex + 1)
+        dgv.Rows.Insert(rowIndex, rowBelow)
+    End Sub
+
     Private Sub onDgvKeyDown(sender As Object, e As KeyEventArgs)
         If (e.Modifiers = Keys.Control AndAlso e.KeyCode = Keys.V) = False Then
             Return
