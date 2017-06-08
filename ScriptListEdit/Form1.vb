@@ -275,6 +275,8 @@ Public Class frmScriptListEdit
 
         WriteBytes(fs, Int32ToFourByte(0))
 
+        fs.Position = fs.Length
+
         While fs.Length Mod &H10 <> 0
             fs.WriteByte(0)
         End While
