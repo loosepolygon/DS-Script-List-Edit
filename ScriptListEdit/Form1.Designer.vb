@@ -35,6 +35,7 @@ Partial Class frmScriptListEdit
         Me.btnMoveUp = New System.Windows.Forms.Button()
         Me.btnDelete = New System.Windows.Forms.Button()
         Me.btnCopy = New System.Windows.Forms.Button()
+        Me.btnMerge = New System.Windows.Forms.Button()
         Me.tabControlRoot.SuspendLayout()
         Me.tabLuainfo.SuspendLayout()
         CType(Me.dgvLuainfo, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -93,7 +94,7 @@ Partial Class frmScriptListEdit
         Me.tabControlRoot.Name = "tabControlRoot"
         Me.tabControlRoot.Padding = New System.Drawing.Point(10, 4)
         Me.tabControlRoot.SelectedIndex = 0
-        Me.tabControlRoot.Size = New System.Drawing.Size(806, 686)
+        Me.tabControlRoot.Size = New System.Drawing.Size(806, 310)
         Me.tabControlRoot.TabIndex = 46
         '
         'tabLuainfo
@@ -103,7 +104,7 @@ Partial Class frmScriptListEdit
         Me.tabLuainfo.Margin = New System.Windows.Forms.Padding(0)
         Me.tabLuainfo.Name = "tabLuainfo"
         Me.tabLuainfo.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabLuainfo.Size = New System.Drawing.Size(798, 658)
+        Me.tabLuainfo.Size = New System.Drawing.Size(798, 282)
         Me.tabLuainfo.TabIndex = 2
         Me.tabLuainfo.Text = "luainfo"
         Me.tabLuainfo.UseVisualStyleBackColor = True
@@ -112,14 +113,16 @@ Partial Class frmScriptListEdit
         '
         Me.dgvLuainfo.AllowUserToAddRows = False
         Me.dgvLuainfo.AllowUserToDeleteRows = False
+        Me.dgvLuainfo.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.dgvLuainfo.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells
         Me.dgvLuainfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.dgvLuainfo.Dock = System.Windows.Forms.DockStyle.Fill
         Me.dgvLuainfo.Location = New System.Drawing.Point(3, 3)
         Me.dgvLuainfo.Margin = New System.Windows.Forms.Padding(0)
         Me.dgvLuainfo.Name = "dgvLuainfo"
         Me.dgvLuainfo.RowHeadersWidth = 60
-        Me.dgvLuainfo.Size = New System.Drawing.Size(792, 652)
+        Me.dgvLuainfo.Size = New System.Drawing.Size(792, 276)
         Me.dgvLuainfo.TabIndex = 39
         '
         'tabLuagnl
@@ -129,7 +132,7 @@ Partial Class frmScriptListEdit
         Me.tabLuagnl.Margin = New System.Windows.Forms.Padding(0)
         Me.tabLuagnl.Name = "tabLuagnl"
         Me.tabLuagnl.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabLuagnl.Size = New System.Drawing.Size(798, 658)
+        Me.tabLuagnl.Size = New System.Drawing.Size(798, 282)
         Me.tabLuagnl.TabIndex = 3
         Me.tabLuagnl.Text = "luagnl"
         Me.tabLuagnl.UseVisualStyleBackColor = True
@@ -145,7 +148,7 @@ Partial Class frmScriptListEdit
         Me.dgvLuagnl.Margin = New System.Windows.Forms.Padding(0)
         Me.dgvLuagnl.Name = "dgvLuagnl"
         Me.dgvLuagnl.RowHeadersWidth = 60
-        Me.dgvLuagnl.Size = New System.Drawing.Size(792, 652)
+        Me.dgvLuagnl.Size = New System.Drawing.Size(792, 276)
         Me.dgvLuagnl.TabIndex = 39
         '
         'btnMoveDown
@@ -184,11 +187,22 @@ Partial Class frmScriptListEdit
         Me.btnCopy.Text = "Copy Entry"
         Me.btnCopy.UseVisualStyleBackColor = True
         '
+        'btnMerge
+        '
+        Me.btnMerge.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.btnMerge.Location = New System.Drawing.Point(551, 40)
+        Me.btnMerge.Name = "btnMerge"
+        Me.btnMerge.Size = New System.Drawing.Size(108, 23)
+        Me.btnMerge.TabIndex = 51
+        Me.btnMerge.Text = "Merge With..."
+        Me.btnMerge.UseVisualStyleBackColor = True
+        '
         'frmScriptListEdit
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(834, 761)
+        Me.ClientSize = New System.Drawing.Size(834, 385)
+        Me.Controls.Add(Me.btnMerge)
         Me.Controls.Add(Me.btnMoveDown)
         Me.Controls.Add(Me.btnMoveUp)
         Me.Controls.Add(Me.btnDelete)
@@ -222,4 +236,5 @@ Partial Class frmScriptListEdit
     Friend WithEvents btnMoveUp As Button
     Friend WithEvents btnDelete As Button
     Friend WithEvents btnCopy As Button
+    Friend WithEvents btnMerge As Button
 End Class

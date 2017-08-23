@@ -112,14 +112,10 @@ Public Class frmScriptListEdit
         Next
     End Sub
 
-    Private Sub btnOpen_Click(sender As Object, e As EventArgs) Handles btnOpen.Click
-        bigEndian = False
-
-        initDGVs()
-
+    Private Sub AddScriptsFromFile(luaInfoFile As String)
         ' luainfo file
 
-        bytes = File.ReadAllBytes(txtFile.Text)
+        bytes = File.ReadAllBytes(luaInfoFile)
 
         Dim rawStr As Byte() = RawStrFromBytes(&H0, 4)
         Dim signature As String = RawStrToStr(rawStr)
@@ -157,8 +153,8 @@ Public Class frmScriptListEdit
 
         ' luagnl file
 
-        Dim luagnlFileName = txtFile.Text.Replace(".luainfo", ".luagnl")
-        If File.Exists(luagnlFileName) = False Then
+        Dim luagnlFileName = luaInfoFile.Substring(0, luaInfoFile.Length - ".luainfo".Length) & ".luagnl" ' using string.replace would replace ALL instances of .luainfo which is just not a good idea. Maybe people just wanna store this in a folder named .luainfo ;))))))
+        If Not File.Exists(luagnlFileName) Then
             Throw New ApplicationException("Cannot find associated luagnl file: " & luagnlFileName)
         End If
 
@@ -183,7 +179,27 @@ Public Class frmScriptListEdit
         Loop
     End Sub
 
+    Private Sub btnOpen_Click(sender As Object, e As EventArgs) Handles btnOpen.Click
+        If String.IsNullOrWhiteSpace(txtFile.Text.Trim()) Then
+            Return
+        ElseIf Not File.Exists(txtFile.Text) Then
+            MessageBox.Show(String.Format("File '{0}' does not exist.", txtFile.Text))
+        End If
+
+        bigEndian = False
+
+        initDGVs()
+
+        AddScriptsFromFile(txtFile.Text)
+    End Sub
+
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
+        If String.IsNullOrWhiteSpace(txtFile.Text.Trim()) Then
+            Return
+        ElseIf Not File.Exists(txtFile.Text) Then
+            MessageBox.Show(String.Format("File '{0}' does not exist.", txtFile.Text))
+        End If
+
         ' luainfo file
 
         bytes = File.ReadAllBytes(txtFile.Text)
@@ -420,6 +436,38 @@ Public Class frmScriptListEdit
                 dgv.Rows(startRow + y).Cells(startColumn + x).Value = newValue
             Next
         Next
+    End Sub
+
+    Private Sub btnMerge_Click(sender As Object, e As EventArgs) Handles btnMerge.Click
+        Dim fileOpenDlg As New OpenFileDialog() With {
+            .AddExtension = False,
+            .CheckFileExists = True,
+            .CheckPathExists = True,
+            .DefaultExt = ".luainfo",
+            .FileName = "",
+            .Filter = "LuaInfo Files (*.luainfo)|*.luainfo",
+            .InitialDirectory = New FileInfo(txtFile.Text).Directory.FullName,
+            .Multiselect = True,
+            .ShowReadOnly = False,
+            .Title = "Select LuaInfo file to merge into this one"
+        }
+
+        Dim dlgResponse = fileOpenDlg.ShowDialog()
+
+        If dlgResponse = DialogResult.OK And fileOpenDlg.FileNames.Length > 0 Then
+
+            If ((dgvLuagnl Is Nothing OrElse dgvLuagnl.Rows.Count = 0) And
+            (dgvLuainfo Is Nothing OrElse dgvLuainfo.Rows.Count = 0)) Then
+                initDGVs()
+            End If
+
+            bigEndian = False
+
+            For Each f In fileOpenDlg.FileNames
+                AddScriptsFromFile(f)
+            Next
+
+        End If
     End Sub
 End Class
 
